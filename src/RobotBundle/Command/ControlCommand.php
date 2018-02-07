@@ -2,16 +2,30 @@
 
 namespace RobotBundle\Command;
 
+use RobotBundle\Services\RobotService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerAwareTrait;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
-class ControlCommand extends Command
+class ControlCommand extends Command implements ContainerAwareInterface
 {
+    use ContainerAwareTrait;
     private $logger;
     private $action;
+    /**
+     * @var RobotService
+     */
+    private $service;
+
+    public function setContainer(ContainerInterface $container = null)
+    {
+        $this->container = $container;
+    }
 
     protected function configure()
     {
@@ -39,5 +53,10 @@ class ControlCommand extends Command
         $this->action = $input->getArgument( "action" );
 
         $this->logger->info( "The action is " . $this->action );
+
+        $this->service = $this->container->get( 'robot.service' );
+        $this->service->setLogger( $this->logger );
+
+        $this->service->test();
     }
 }
