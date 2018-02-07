@@ -1,0 +1,4 @@
+services:
+#    robot.example:
+#        class: RobotBundle\Example
+#        arguments: ["@service_id", "plain_value", "%parameter%"]
