@@ -2,6 +2,7 @@
 
 namespace RobotBundle\Command;
 
+use RobotBundle\Entity\Action;
 use RobotBundle\Services\RobotService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -52,11 +53,30 @@ class ControlCommand extends Command implements ContainerAwareInterface
         $this->logger = new ConsoleLogger( $output );
         $this->action = $input->getArgument( "action" );
 
-        $this->logger->info( "The action is " . $this->action );
+        //$this->logger->info( "The action is " . $this->action );
 
         $this->service = $this->container->get( 'robot.service' );
         $this->service->setLogger( $this->logger );
 
-        $this->service->test();
+        //$this->service->test();
+        $this->service->performActions( $this->getTestActions() );
+    }
+
+    private function getTestActions()
+    {
+        $result = array();
+
+        $data = "PLACE,NORTH,2,5|MOVE|LEFT|REPORT|LEFT|REPORT|LEFT|REPORT|LEFT|REPORT|LEFT|REPORT|LEFT|REPORT|LEFT|REPORT|LEFT|REPORT|LEFT|REPORT|LEFT|REPORT|PLACE,NORTH,3,4|REPORT";
+        $dataArray = explode( "|", $data );
+        foreach( $dataArray as $actionString )
+        {
+            $action = Action::get( $actionString, $this->logger );
+            if ( $action instanceof Action )
+            {
+                $result[] = $action;
+            }
+        }
+
+        return $result;
     }
 }
